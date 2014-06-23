@@ -1,4 +1,6 @@
 *.pydevproject
+.classpath
+.project
 .metadata
 .gradle
 bin/
