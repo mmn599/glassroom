@@ -1,8 +1,11 @@
 package glass.room.edu;
 
 public class PerformanceRating {
+	
 	public int total;
 	public int correct;
+	public static final int CORRECT_ANSWER = 1;
+	public static final int INCORRECT_ANSWER = 0;
 	
 	public PerformanceRating() {
 		total = 0;
