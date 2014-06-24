@@ -17,63 +17,63 @@ import com.google.android.glass.widget.CardScrollView;
 
 public class MainActivity extends Activity implements OnItemClickListener {
 
-	private List<Card> cards;
-	private CardScrollView cardscrollview;
+	private List<Card> subjectCards;
+	private List<String> subjects;
+	private CardScrollView subjectCardScroll;
 	//TODO: lookup how to properly handling databasing in android. do it.
-	private DatabaseHandler db;
+	private StudentDatabaseHandler db;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createCards();
+        
         setContentView(R.layout.activity_main);
     }
     
     private void createCards() {
-        cards = new ArrayList<Card>();
-
-        //creates 3 example subject cards
-        //TODO: Make this dynamic. A teacher can set up and change her subjects.
-        Card card;
-        card = new Card(this);
-        card.setText("Biology");
-        card.setFootnote("Chapter 13, Biospheres");
-        cards.add(card);
-
-        Card card2;
-        card2 = new Card(this);
-        card2.setText("Literature");
-        card2.setFootnote("19th Century English");
-        cards.add(card2);
-
-        Card card3;
-        card3 = new Card(this);
-        card3.setText("Mathematics");
-        card3.setFootnote("Elementary differentiation");
-        cards.add(card3);
+    	subjectCardScroll = new CardScrollView(this);
+    	SubjectCardScrollAdapter adapter = new SubjectCardScrollAdapter();
+    	subjectCardScroll.setAdapter(adapter);
+    	subjectCardScroll.activate();
+        setContentView(subjectCardScroll);
+    	
+        subjectCards = new ArrayList<Card>();
+        subjects = Student.defaultSubjects;
+        Card subjCard = new Card(this);
+        for (String subj : subjects) {
+        	subjCard.setText(subj);
+        	// Currently we don't have any extra information alongside subjects,
+        	// but in the future populating the footnote/image would be nice.
+        	// subCard.setFootnote("MORE INFO");
+        	// subCard.setImageLayout(Card.ImageLayout.LEFT); // This will probably be moved to top.
+        	// subCard.addImage("CORRESPONDING IMAGE");
+        	subjectCards.add(subjCard);
+        }
     }
     
     @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent suggestIntent = new Intent(this, SuggestStudentActivity.class);
-		suggestIntent.putExtra("subject", cards.get(position).getText());
+		suggestIntent.putExtra("subject", subjectCards.get(position).getText());
 		startActivity(suggestIntent);
 	}
     
-    private class ExampleCardScrollAdapter extends CardScrollAdapter {
+    private class SubjectCardScrollAdapter extends CardScrollAdapter {
 
         @Override
         public int getPosition(Object item) {
-            return cards.indexOf(item);
+            return subjectCards.indexOf(item);
         }
 
         @Override
         public int getCount() {
-            return cards.size();
+            return subjectCards.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return cards.get(position);
+            return subjectCards.get(position);
         }
 
         @Override
@@ -83,30 +83,13 @@ public class MainActivity extends Activity implements OnItemClickListener {
 
         @Override
         public int getItemViewType(int position){
-            return cards.get(position).getItemViewType();
+            return subjectCards.get(position).getItemViewType();
         }
 
         @Override
         public View getView(int position, View convertView,
                 ViewGroup parent) {
-            return  cards.get(position).getView(convertView, parent);
+            return  subjectCards.get(position).getView(convertView, parent);
         }
     }
-    
-    //creates some basic student data as an example
-    //TODO: provide basic setup funtionality to add students to program
-    public void fakeData() {
-    	Student student2 = new Student();
-    	student2.setName("Matthew");
-    	Student student4 = new Student();
-    	student4.setName("Alex");
-    	Student student5 = new Student();
-    	student5.setName("David");
-    	db.addContact(student2);
-    	db.addContact(student4);
-    	db.addContact(student5);
-    	db.close();
-    }
-
-
 }
