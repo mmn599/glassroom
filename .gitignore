@@ -1,6 +1,6 @@
 *.pydevproject
 .classpath
-.project
+.DS_Store
 .metadata
 .gradle
 bin/
