@@ -164,10 +164,10 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, student.getName()); // Contact Name
-        for(String sub : subjectcorrectkeys) {
+        for(String sub : subjects) {
         	values.put(sub, student.getPerformance(sub).getCorrect());
         }
-        for(String sub : subjecttotalkeys) {
+        for(String sub : subjects) {
         	values.put(sub, student.getPerformance(sub).getTotal());
         }
 
@@ -183,8 +183,7 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
                 new String[] { String.valueOf(contact.getId()) });
         db.close();
     }
- 
- 
+
     // Getting contacts Count
     public int getContactsCount() {
         String countQuery = "SELECT  * FROM " + TABLE_STUDENTS;
