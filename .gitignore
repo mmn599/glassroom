@@ -1,4 +1,68 @@
-*.pydevproject
+
+*
+o.pydevproject
+.classpato
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin 
+.target
+
+# TeXlipse plugin
+.texlipse
+.project
+.DS_Store
+.metadata
+.gradle
+bin/
+tmp/
+gen/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin 
+.target
+
+# TeXlipse plugin
+.texlipse
+pydevproject
 .classpath
 .project
 .DS_Store
