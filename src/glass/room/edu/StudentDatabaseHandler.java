@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class StudentDatabaseHandler extends SQLiteOpenHelper {
 	 
     // All Static variables
     // Database Version
@@ -20,29 +20,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
  
     // Contacts table name
     private static final String TABLE_STUDENTS = "students";
+    
+    //subjects used
+    private ArrayList<String> subjects;
+    private ArrayList<String> subjectcorrectkeys;
+    private ArrayList<String> subjecttotalkeys;
  
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
-    private static final String KEY_CORRECT_SCIENCE = "cr_science";
-    private static final String KEY_CORRECT_MATH = "cr_math";
-    private static final String KEY_CORRECT_ENGLISH = "cr_english";
-    private static final String KEY_SCIENCE = "science";
-    private static final String KEY_MATH = "math";
-    private static final String KEY_ENGLISH = "english";
  
-    public DatabaseHandler(Context context) {
+    public StudentDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        subjects = Student.defaultSubjects;
     }
- 
+    
+    public StudentDatabaseHandler(Context context, ArrayList<String> subjects) {
+    	super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    	this.subjects = subjects;
+    }
+    
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
+    	subjecttotalkeys = createSubjectKeys(subjects, "TOTAL");
+    	subjectcorrectkeys = createSubjectKeys(subjects, "CORRECT");
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_STUDENTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_ENGLISH + " INTEGER," + KEY_SCIENCE + " INTEGER," + KEY_MATH + " INTEGER," +
-               KEY_CORRECT_ENGLISH + " INTEGER," +KEY_CORRECT_SCIENCE + " INTEGER," + KEY_CORRECT_MATH+ " INTEGER"+")";
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT";
+        for(String sub : subjecttotalkeys) {
+        	CREATE_CONTACTS_TABLE += ","+sub;
+        }
+        for(String sub : subjectcorrectkeys) {
+        	CREATE_CONTACTS_TABLE += ","+sub;
+        }
+        CREATE_CONTACTS_TABLE += ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
+    }
+    
+    public ArrayList<String> createSubjectKeys(ArrayList<String> subjects, String info) {
+    	ArrayList<String> toReturn = new ArrayList<String>();
+    	for(String sub : subjects) {
+    		String KEY = sub + info;
+    		toReturn.add(KEY+" INTEGER");
+    	}
+    	return toReturn;
     }
  
     // Upgrading database
@@ -50,7 +71,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_STUDENTS);
- 
         // Create tables again
         onCreate(db);
     }
@@ -60,19 +80,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
  
     // Adding new contact
-    public void addContact(Student student) {
+    public void addStudent(Student student) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, student.getName()); // Contact Name
-        values.put(KEY_CORRECT_ENGLISH, student.getCorrectEnglish());
-        values.put(KEY_CORRECT_SCIENCE, student.getCorrectScience());
-        values.put(KEY_CORRECT_MATH, student.getCorrectMath());
-        values.put(KEY_ENGLISH, student.getEnglish());
-        values.put(KEY_SCIENCE, student.getScience());
-        values.put(KEY_MATH, student.getMath());
-        
-      
+        for(String sub : subjectcorrectkeys) {
+        	values.put(sub,student.getPerformance(sub).getCorrect());
+        }
+        for(String sub : subjecttotalkeys) {
+        	values.put(sub,student.getPerformance(sub).getTotal());
+        }
         // Inserting Row
         db.insert(TABLE_STUDENTS, null, values);
         db.close(); // Closing database connection
@@ -82,29 +100,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Student getContact(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
  
-        Cursor cursor = db.query(TABLE_STUDENTS, new String[] { KEY_ID,
-                KEY_NAME, KEY_CORRECT_ENGLISH, KEY_CORRECT_MATH, KEY_CORRECT_SCIENCE,
-                KEY_ENGLISH, KEY_MATH, KEY_SCIENCE }, KEY_ID + "=?",
+        String[] commons = {KEY_ID, KEY_NAME};
+        String[] correctKeys = subjectcorrectkeys.toArray(new String[subjectcorrectkeys.size()]);
+        String[] totalKeys = subjecttotalkeys.toArray(new String[subjecttotalkeys.size()]);
+        String[] total = new String[commons.length + correctKeys.length + totalKeys.length];
+        System.arraycopy(commons, 0, total, 0, commons.length);
+        System.arraycopy(correctKeys, 0, total, commons.length, correctKeys.length);
+        System.arraycopy(totalKeys, 0, total, commons.length+correctKeys.length, totalKeys.length);
+        
+        Cursor cursor = db.query(TABLE_STUDENTS, total, KEY_ID + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
  
-        Student student = new Student();
-        
-        student.setId(Integer.parseInt(cursor.getString(0)));
-        student.setName(cursor.getString(1));
-        student.setCorrectEnglish(Integer.parseInt(cursor.getString(2)));
-        student.setCorrectScience(Integer.parseInt(cursor.getString(3)));
-        student.setCorrectMath(Integer.parseInt(cursor.getString(4)));
-        student.setEnglish(Integer.parseInt(cursor.getString(5)));
-        student.setScience(Integer.parseInt(cursor.getString(6)));
-        student.setMath(Integer.parseInt(cursor.getString(7)));
-        
+        Student student = new Student(null, subjects);
+        int x = 0;
+        student.setId(Integer.parseInt(cursor.getString(x++)));
+        student.setName(cursor.getString(x++));
+        for(String sub : subjects) {
+        	student.getPerformance(sub).setCorrect(Integer.parseInt(cursor.getString(x++)));
+        }
+        for(String sub : subjects) {
+        	student.getPerformance(sub).setTotal(Integer.parseInt(cursor.getString(x++)));
+        }
+
         // return contact
         return student;
     }
      
-    // Getting All Contacts
+    // Getting All Students
     public List<Student> getAllContacts() {
         List<Student> contactList = new ArrayList<Student>();
         // Select All Query
@@ -116,15 +140,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-            	Student student = new Student();
-            	student.setId(Integer.parseInt(cursor.getString(0)));
-                student.setName(cursor.getString(1));
-                student.setCorrectEnglish(Integer.parseInt(cursor.getString(2)));
-                student.setCorrectScience(Integer.parseInt(cursor.getString(3)));
-                student.setCorrectMath(Integer.parseInt(cursor.getString(4)));
-                student.setEnglish(Integer.parseInt(cursor.getString(5)));
-                student.setScience(Integer.parseInt(cursor.getString(6)));
-                student.setMath(Integer.parseInt(cursor.getString(7)));
+            	Student student = new Student(null, subjects);
+                int x = 0;
+                student.setId(Integer.parseInt(cursor.getString(x++)));
+                student.setName(cursor.getString(x++));
+                for(String sub : subjects) {
+                	student.getPerformance(sub).setCorrect(Integer.parseInt(cursor.getString(x++)));
+                }
+                for(String sub : subjects) {
+                	student.getPerformance(sub).setTotal(Integer.parseInt(cursor.getString(x++)));
+                }
                 contactList.add(student);
             } while (cursor.moveToNext());
         }
@@ -139,13 +164,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, student.getName()); // Contact Name
-        values.put(KEY_CORRECT_ENGLISH, student.getCorrectEnglish());
-        values.put(KEY_CORRECT_SCIENCE, student.getCorrectScience());
-        values.put(KEY_CORRECT_MATH, student.getCorrectMath());
-        values.put(KEY_ENGLISH, student.getEnglish());
-        values.put(KEY_SCIENCE, student.getScience());
-        values.put(KEY_MATH, student.getMath());
- 
+        for(String sub : subjectcorrectkeys) {
+        	values.put(sub, student.getPerformance(sub).getCorrect());
+        }
+        for(String sub : subjecttotalkeys) {
+        	values.put(sub, student.getPerformance(sub).getTotal());
+        }
+
         // updating row
         return db.update(TABLE_STUDENTS, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(student.getId()) });

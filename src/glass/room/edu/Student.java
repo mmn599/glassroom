@@ -1,29 +1,38 @@
 package glass.room.edu;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
 public class Student {
+	
 	private String name;
 	private int _id;
-	private int correctEnglish;
-	private int totalEnglish;
-	private int correctMath;
-	private int totalMath;
-	private int correctScience;
-	private int totalScience;
+	private Map<String, PerformanceRating> performance;
+	public static ArrayList<String> defaultSubjects = new ArrayList<String>() {{
+		this.add("Mathematics");
+		this.add("Literature");
+		this.add("Biology");
+	}};
 	
+	//default constructor
 	public Student() {
-		name = "Fake";
-		_id = 0;
-		correctEnglish = 0;
-		totalEnglish = 0;
-		correctMath = 0;
-		totalMath = 0;
-		correctScience = 0;
-		totalScience = 0;
+		this("defaultstudent", defaultSubjects);
 	}
 	
-	public Student(String name, int id){
-		this.setName(name);
-		this.setId(id);
+	public Student(String name) {
+		this(name, defaultSubjects);
+	}
+	
+	public Student(String name, ArrayList<String> subjects) {
+		performance = new HashMap<String, PerformanceRating>();
+		this.name = name;
+		_id = 0;
+		for(String sub : subjects) {
+			performance.put(sub, new PerformanceRating());
+		}
 	}
 
 	public String getName() {
@@ -42,51 +51,8 @@ public class Student {
 		this._id = id;
 	}
 
-	public int getCorrectEnglish() {
-		return correctEnglish;
+	public PerformanceRating getPerformance(String subject) {
+		return performance.get(subject);
 	}
-
-	public void setCorrectEnglish(int correctEnglish) {
-		this.correctEnglish = correctEnglish;
-	}
-
-	public int getEnglish() {
-		return totalEnglish;
-	}
-
-	public void setEnglish(int totalEnglish) {
-		this.totalEnglish = totalEnglish;
-	}
-
-	public int getCorrectMath() {
-		return correctMath;
-	}
-
-	public void setCorrectMath(int correctMath) {
-		this.correctMath = correctMath;
-	}
-
-	public int getMath() {
-		return totalMath;
-	}
-
-	public void setMath(int totalMath) {
-		this.totalMath = totalMath;
-	}
-
-	public int getCorrectScience() {
-		return correctScience;
-	}
-
-	public void setCorrectScience(int correctScience) {
-		this.correctScience = correctScience;
-	}
-
-	public int getScience() {
-		return totalScience;
-	}
-
-	public void setScience(int totalScience) {
-		this.totalScience = totalScience;
-	}
+	
 }
