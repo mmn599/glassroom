@@ -16,7 +16,7 @@ import com.google.android.glass.app.Card;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 
-public class MainActivity extends Activity implements OnItemClickListener {
+public class ChooseSubjectActivity extends Activity implements OnItemClickListener {
 	
 	private List<Card> subjectCards;
 	private List<String> subjects;
