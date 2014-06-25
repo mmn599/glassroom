@@ -2,6 +2,7 @@ package glass.room.edu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -29,6 +30,7 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_PROF_URI = "profuri";
  
     public StudentDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,7 +50,7 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_STUDENTS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT";
+                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT" + KEY_PROF_URI + " TEXT";
         for(String sub : subjecttotalkeys) {
         	CREATE_CONTACTS_TABLE += ","+sub;
         }
@@ -146,6 +148,7 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
                 int x = 0;
                 student.setId(Integer.parseInt(cursor.getString(x++)));
                 student.setName(cursor.getString(x++));
+        		student.setProfilePictureUri("drawable/" + student.getName().toLowerCase(Locale.getDefault()));
                 for(String sub : subjects) {
                 	student.getPerformance(sub).setCorrect(Integer.parseInt(cursor.getString(x++)));
                 }

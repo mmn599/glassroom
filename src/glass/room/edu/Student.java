@@ -2,14 +2,18 @@ package glass.room.edu;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import android.graphics.drawable.Drawable;
 
 
 public class Student {
 	
 	private String name;
 	private int _id;
+	private String profile_picture_uri;
+	private Drawable profilePicture;
 	private Map<String, PerformanceRating> performance;
 	public static final ArrayList<String> defaultSubjects = new ArrayList<String>() {{
 		this.add("Mathematics");
@@ -53,6 +57,14 @@ public class Student {
 
 	public PerformanceRating getPerformance(String subject) {
 		return performance.get(subject);
+	}
+	
+	public String getProfilePictureUri() {
+		return profile_picture_uri;
+	}
+	
+	public void setProfilePictureUri(String profile_picture_uri) {
+		this.profile_picture_uri = profile_picture_uri;
 	}
 	
 }

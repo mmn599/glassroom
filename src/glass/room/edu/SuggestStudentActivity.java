@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -62,11 +63,12 @@ public class SuggestStudentActivity extends Activity {
 		Student alternateSuggestion = students.get(1);
 		
 		Card card = new Card(this);
-		View vCard = card.getView();
 		card.setImageLayout(Card.ImageLayout.LEFT);
 		card.setText(suggestion.getName());
 		card.setFootnote(alternateSuggestion.getName());
-		vCard.setFocusable(true);
+		card.getView().setFocusable(true);
+		card.addImage(getResources().getDrawable(
+				getResources().getIdentifier(suggestion.getProfilePictureUri(), null, getPackageName())));
 		setContentView(card.getView());
 	}
 	    
