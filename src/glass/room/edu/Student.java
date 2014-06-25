@@ -11,7 +11,7 @@ public class Student {
 	private String name;
 	private int _id;
 	private Map<String, PerformanceRating> performance;
-	public static ArrayList<String> defaultSubjects = new ArrayList<String>() {{
+	public static final ArrayList<String> defaultSubjects = new ArrayList<String>() {{
 		this.add("Mathematics");
 		this.add("Literature");
 		this.add("Biology");
