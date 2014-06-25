@@ -70,6 +70,12 @@ public class SuggestStudentActivity extends Activity {
 		card.addImage(getResources().getDrawable(
 				getResources().getIdentifier(suggestion.getProfilePictureUri(), null, getPackageName())));
 		setContentView(card.getView());
+		
+//		setContentView(R.layout.simple_title);
+//		TextView mainT = (TextView) findViewById(R.id.mainTitle);
+//		mainT.setText("Hello World");
+//		TextView subT = (TextView) findViewById(R.id.subTitle);
+//		subT.setText("A subheader about the above.");
 	}
 	    
 	@Override
