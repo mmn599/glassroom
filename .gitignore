@@ -31,5 +31,7 @@ local.properties
 # sbteclipse plugin 
 .target
 
+.DS_Store
+
 # TeXlipse plugin
 .texlipse
