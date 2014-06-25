@@ -1,6 +1,7 @@
 package glass.room.edu;
 
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -44,7 +45,7 @@ public class QuestionActivity extends Activity {
 		setContentView(R.layout.activity_question);
 		Intent intent = getIntent();
 		subject = (String) intent.getStringExtra("subject");
-		Log.d("TAG","subject is :"+subject);
+		Log.d(Constants.TAG, "Subject is: "+subject);
 		displaySpeechRecognizer();
 	}
 
@@ -73,15 +74,16 @@ public class QuestionActivity extends Activity {
 	    this.finish();
 	}
 
-	public void inputData() {
-
-	}
-
 	//quality of 1 means correct question
 	public void updateStudent(Student student, String subject, int quality) {
+		Log.d(Constants.TAG, student.getName()+" subject" +student.getPerformance(subject).getCorrect() + " "
+				+ student.getPerformance(subject).getTotal());
 	    student.getPerformance(subject).incrementCorrect(quality);
 	    student.getPerformance(subject).incrementTotal(1);
+	    Log.d(Constants.TAG, "Updated student: "+student.getName()+ subject + " "+student.getPerformance(subject).getCorrect() + " "
+				+ student.getPerformance(subject).getTotal());
 		db.updateContact(student);
+		//TEST
 	}
 	
 	public int parseTeacherResponseForQuality(String input) {
@@ -96,6 +98,7 @@ public class QuestionActivity extends Activity {
 				quality--;
 			}
 		}
+		Log.d(Constants.TAG,"quality: "+quality);
 		if(quality>0) {
 			return PerformanceRating.CORRECT_ANSWER;
 		}
@@ -103,19 +106,22 @@ public class QuestionActivity extends Activity {
 			return PerformanceRating.INCORRECT_ANSWER;
 		}
 	}
-	
+
 	public Student parseTeacherResponseForName(String input) {
 		Student studentSelected = null;
+		input = input.toLowerCase(Locale.getDefault());
 		List<Student> students = db.getAllContacts();
 		db.close();
 		for(Student cs : students) {
-			if(input.contains(cs.getName())) {
+			if(input.contains(cs.getName().toLowerCase(Locale.getDefault()))) {
 				studentSelected = cs;
 			}
 		}
 		if(studentSelected == null) {
+			Log.d(Constants.TAG, "no student found");
 			return null;
 		}
+		Log.d(Constants.TAG, "parsed " + studentSelected.getName());
 		return studentSelected;
 	}
 

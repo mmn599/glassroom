@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -26,13 +27,36 @@ public class SuggestStudentActivity extends Activity {
 
 	@Override
 	public void onResume() {
-		super.onResume();
-		
+		super.onResume();	
 		db = new StudentDatabaseHandler(this);
 		students = db.getAllContacts();
+		
 		db.close();
 
+		String toreport = "";
+		for(Student student : students) {
+			toreport += (student.getName() + " ");
+			for(String sub : Student.defaultSubjects) {
+				toreport += (sub + ": "+student.getPerformance(sub).getCorrect() + " "+ student.getPerformance(sub).getTotal()+" ");
+			}
+			Log.d(Constants.TAG,toreport);
+			toreport = "";
+		}
+		
+		//TEST
+		toreport = "";
+		for(Student student : students) {
+			toreport += (student.getName() + " ");
+		}
+		Log.d(Constants.TAG, toreport);
+		
 		sortStudentsBySubjectPerformace(students);
+	
+		toreport = "";
+		for(Student student : students) {
+			toreport += (student.getName() + " ");
+		}
+		Log.d(Constants.TAG, toreport);
 		
 		Student suggestion = students.get(0);
 		Student alternateSuggestion = students.get(1);

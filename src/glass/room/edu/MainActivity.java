@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,7 +17,7 @@ import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 
 public class MainActivity extends Activity implements OnItemClickListener {
-
+	
 	private List<Card> subjectCards;
 	private List<String> subjects;
 	private CardScrollView subjectCardScroll;
@@ -26,22 +27,24 @@ public class MainActivity extends Activity implements OnItemClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.deleteDatabase("studentsDatabase");
+        Log.d(Constants.TAG, "Deleted database");
+        fakeData();
         createCards();
-        
-        setContentView(R.layout.activity_main);
-    }
-    
-    private void createCards() {
-    	subjectCardScroll = new CardScrollView(this);
+        subjectCardScroll = new CardScrollView(this);
+    	subjectCardScroll.setOnItemClickListener(this);
     	SubjectCardScrollAdapter adapter = new SubjectCardScrollAdapter();
     	subjectCardScroll.setAdapter(adapter);
     	subjectCardScroll.activate();
-        setContentView(subjectCardScroll);
-    	
-        subjectCards = new ArrayList<Card>();
+    	setContentView(subjectCardScroll);
+    	Log.d(Constants.TAG, "app started");
+    }
+    
+    private void createCards() {
+    	subjectCards = new ArrayList<Card>();
         subjects = Student.defaultSubjects;
-        Card subjCard = new Card(this);
         for (String subj : subjects) {
+            Card subjCard = new Card(this);
         	subjCard.setText(subj);
         	// Currently we don't have any extra information alongside subjects,
         	// but in the future populating the footnote/image would be nice.
@@ -91,5 +94,15 @@ public class MainActivity extends Activity implements OnItemClickListener {
                 ViewGroup parent) {
             return  subjectCards.get(position).getView(convertView, parent);
         }
+    }
+    
+    public void fakeData() {
+    	Student student1 = new Student("Matthew");
+    	Student student2 = new Student("Alex");
+    	Student student3 = new Student("Jason");
+    	db = new StudentDatabaseHandler(this);
+    	db.addStudent(student1);
+    	db.addStudent(student2);
+    	db.addStudent(student3);
     }
 }

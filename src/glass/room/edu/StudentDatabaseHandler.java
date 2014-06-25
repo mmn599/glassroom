@@ -13,7 +13,7 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
 	 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
  
     // Database Name
     private static final String DATABASE_NAME = "studentsDatabase";
@@ -33,18 +33,20 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
     public StudentDatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         subjects = Student.defaultSubjects;
+        subjecttotalkeys = createSubjectKeys(subjects, "TOTAL");
+    	subjectcorrectkeys = createSubjectKeys(subjects, "CORRECT");
     }
     
     public StudentDatabaseHandler(Context context, ArrayList<String> subjects) {
     	super(context, DATABASE_NAME, null, DATABASE_VERSION);
     	this.subjects = subjects;
+    	subjecttotalkeys = createSubjectKeys(subjects, "TOTAL");
+    	subjectcorrectkeys = createSubjectKeys(subjects, "CORRECT");
     }
     
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	subjecttotalkeys = createSubjectKeys(subjects, "TOTAL");
-    	subjectcorrectkeys = createSubjectKeys(subjects, "CORRECT");
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_STUDENTS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT";
         for(String sub : subjecttotalkeys) {
@@ -85,11 +87,11 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
  
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, student.getName()); // Contact Name
-        for(String sub : subjectcorrectkeys) {
-        	values.put(sub,student.getPerformance(sub).getCorrect());
+        for(String sub : subjects) {
+        	values.put(sub+"CORRECT",student.getPerformance(sub).getCorrect());
         }
-        for(String sub : subjecttotalkeys) {
-        	values.put(sub,student.getPerformance(sub).getTotal());
+        for(String sub : subjects) {
+        	values.put(sub+"TOTAL",student.getPerformance(sub).getTotal());
         }
         // Inserting Row
         db.insert(TABLE_STUDENTS, null, values);
@@ -165,10 +167,10 @@ public class StudentDatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, student.getName()); // Contact Name
         for(String sub : subjects) {
-        	values.put(sub, student.getPerformance(sub).getCorrect());
+        	values.put(sub+"CORRECT", student.getPerformance(sub).getCorrect());
         }
         for(String sub : subjects) {
-        	values.put(sub, student.getPerformance(sub).getTotal());
+        	values.put(sub+"TOTAL", student.getPerformance(sub).getTotal());
         }
 
         // updating row
