@@ -1,11 +1,9 @@
-GlassRoom
+glassroom
 ============
 
-GlassRoom is a tool that hopes to utilize Google Glass in the 
+glassroom is a tool that hopes to utilize Google Glass in the 
 classroom to assist teachers in optimizing student participation.
 
+Much more to come.
 
-
-
-
-Saleh ElHattab & Matt Normyle
+Saleh Elhattab & Matt Normyle
